@@ -22,7 +22,7 @@ Parameters:
     Description: "EBS Volume to Monitor."
     Type: AWS::EC2::Volume::Id
     AllowedPattern: "^[A-Za-z0-9_-]*$"
-    Default: vol-0a2ddbf3ee34e7d2a
+    Default: vol-xxxxxxxxxxxx
 
   EBSDashboardName:
     Description: "Cloudwatch Dashboard Name."
