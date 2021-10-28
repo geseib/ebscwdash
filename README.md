@@ -24,11 +24,11 @@ After a minute, you can select the URL from the Outputs tab in the Cloudformatio
 In order to get accurate reading we need to grab a few EBS metrics and use the **metric math** feature in **Amazon Cloudwatch**. We will setup two graphs; one for the IOPs and one for the Throughput. 
 
 ### EBS IOPs Graph
-![EBS Throughput Graph](EBSDash_ThroughputGraph.png)
+![EBS IOPs Graph](EBSDash_IOPsGraph.png)
 
 We will need to calculate the IOPs from the Ops metrics as below.
 
-![EBS Throughput Metrics](EBSDash_ThroughputMetrics.png)
+![EBS IOPs Metrics](EBSDash_IOPsMetrics.png)
 
 | Visible | **id** | **Label**      | **Details**                                   | **Statistic** | **Period** |
 |---------|--------|----------------|-----------------------------------------------|---------------|------------|
@@ -97,7 +97,7 @@ Here is the source code for **EBS Volume Throughput** *(be sure to replace **vol
         [ { "expression": "(m3/(1024*1024))/PERIOD(m3)", "label": "MB Read Per Second", "id": "e4", "region": "us-east-1" } ],
         [ { "expression": "(m4/(1024*1024))/PERIOD(m4)", "label": "MB Write Per Second", "id": "e5", "region": "us-east-1" } ],
         [ { "expression": "e4+e5", "label": "Total Consumed MB/s", "id": "e6", "region": "us-east-1" } ],
-        [ "AWS/EBS", "VolumeReadBytes", "VolumeId", "vol-0a2ddbf3ee34e7d2a", { "id": "m3", "visible": false } ],
+        [ "AWS/EBS", "VolumeReadBytes", "VolumeId", "vol-xxxxxxxxxxxx", { "id": "m3", "visible": false } ],
         [ ".", "VolumeWriteBytes", ".", ".", { "id": "m4", "visible": false } ]
     ],
     "view": "timeSeries",
