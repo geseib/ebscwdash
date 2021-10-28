@@ -20,3 +20,103 @@ or run from the [AWS Console](https://us-east-1.console.aws.amazon.com/cloudform
 
 After a minute, you can select the URL from the Outputs tab in the Cloudformation console, or go to the Cloudwatch console and select your new dashboard.
 
+## About the Metrics
+In order to get accurate reading we need to grab a few EBS metrics and use the **metric math** feature in **Amazon Cloudwatch**. We will setup two graphs; one for the IOPs and one for the Throughput. 
+
+### EBS IOPs Graph
+We will need to calculate the IOPs from the Ops metrics as below.
+
+| Visible | **id** | **Label**      | **Details**                                   | **Statistic** | **Period** |
+|---------|--------|----------------|-----------------------------------------------|---------------|------------|
+|    *    | e1     | Read IOPs      | m1/PERIOD(m1)                                 |               |            |
+|    *    | e2     | Write IOPs     | m2/PERIOD(m2)                                 |               |            |
+|    *    | e3     | Total IOPs     | e1+e2                                         |               |            |
+|         | m1     | VolumeReadOps  | EBS.VolumeReadOps.VolumeId:vol-xxxxxxxxxxxxx  | Sum           | 1 Minute   |
+|         | m2     | VolumeWriteOps | EBS.VolumeWriteOps.VolumeId:vol-xxxxxxxxxxxxx | Sum           | 1 Minute   |
+
+Here is the source code for **EBS Volume IOPs** *(be sure to replace **vol-xxxxxxxxxxxxxx** with the VolumeId of your EBS volume)*
+```
+{
+    "metrics": [
+        [ { "expression": "m1/PERIOD(m1)", "label": "Read IOPs", "id": "e1", "region": "us-east-1" } ],
+        [ { "expression": "m2/PERIOD(m2)", "label": "Writes IOPs", "id": "e2", "region": "us-east-1" } ],
+        [ { "expression": "e1+e2", "label": "Total IOPs", "id": "e3", "region": "us-east-1" } ],
+        [ "AWS/EBS", "VolumeReadOps", "VolumeId", "vol-xxxxxxxxxxxxxx", { "id": "m1", "visible": false } ],
+        [ ".", "VolumeWriteOps", ".", ".", { "id": "m2", "visible": false } ]
+    ],
+    "view": "timeSeries",
+    "stacked": false,
+    "region": "us-east-1",
+    "stat": "Sum",
+    "period": 60,
+    "yAxis": {
+        "left": {
+            "label": "IOPS",
+            "showUnits": false
+        },
+        "right": {
+            "label": "",
+            "showUnits": false
+        }
+    },
+    "annotations": {
+        "horizontal": [
+            {
+                "label": "IOPs Max",
+                "value": 7800
+            }
+        ]
+    },
+    "title": "EBS IOPS"
+}
+```
+
+
+## EBS Throughput Graph
+We will also need to calculate the Throughput from the Ops metrics as below.
+
+| Visible | Id | Label               | Details                                      | Statistic | **Period** |
+|---------|----|---------------------|----------------------------------------------|-----------|------------|
+| *       | e4 | MB Read Per Second  | (m3/(1024*1024))/PERIOD(m3)                  |           |            |
+| *       | e5 | MB Write Per Second | (m3/(1024*1024))/PERIOD(m3)                  |           |            |
+| *       | e6 | Total Throughput    | e4+e5                                        |           |            |
+|         | m3 | VolumeReadBytes     | EBS.VolumeReadBytes:VolumeId:volxxxxxxxxxxx  | Sum       | 1 Minute   |
+|         | m4 | VolumeWriteBytes    | EBS.VolumeWriteBytes:VolumeId:volxxxxxxxxxxx | Sum       | 1 Minute   |
+
+Here is the source code for **EBS Volume Throughput** *(be sure to replace **vol-xxxxxxxxxxxxxx** with the VolumeId of your EBS volume)*
+
+```
+{
+    "metrics": [
+        [ { "expression": "(m3/(1024*1024))/PERIOD(m3)", "label": "MB Read Per Second", "id": "e4", "region": "us-east-1" } ],
+        [ { "expression": "(m4/(1024*1024))/PERIOD(m4)", "label": "MB Write Per Second", "id": "e5", "region": "us-east-1" } ],
+        [ { "expression": "e4+e5", "label": "Total Consumed MB/s", "id": "e6", "region": "us-east-1" } ],
+        [ "AWS/EBS", "VolumeReadBytes", "VolumeId", "vol-0a2ddbf3ee34e7d2a", { "id": "m3", "visible": false } ],
+        [ ".", "VolumeWriteBytes", ".", ".", { "id": "m4", "visible": false } ]
+    ],
+    "view": "timeSeries",
+    "stacked": false,
+    "region": "us-east-1",
+    "stat": "Sum",
+    "period": 60,
+    "yAxis": {
+        "left": {
+            "label": "MB/s",
+            "showUnits": false
+        },
+        "right": {
+            "label": "",
+            "showUnits": false
+        }
+    },
+    "annotations": {
+        "horizontal": [
+            {
+                "label": "BW Max",
+                "value": 250
+            }
+        ]
+    },
+    "title": "EBS MB per Second"
+}
+```
