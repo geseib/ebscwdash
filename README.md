@@ -1,4 +1,12 @@
 # EBS IOPs performance Cloudwatch dashboard 
+
+When you provision an EBS volume in AWS it has two main performance contraints depending on how it is provisioned. For GP2 volumes the larger the volume the more Throughput (128MB/s 0 250MB/s) and IOPs (3 IOPs per GB in volume size). For GP3 and IO2 you configure these dimennsions when you provision the volume. *for more info see see [Table](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#solid-state-drives))*
+
+
+> :warning:  These graphs do not take into account Burst, which is available to those GP2 volumes with less that 3000 IOPs. GP2 volumes smaller than 1TB will have some burst IOPs (see [Burst Blog](https://aws.amazon.com/blogs/database/understanding-burst-vs-baseline-performance-with-amazon-rds-and-gp2/)))
+
+
+### Install
 This cloudformation template takes the four inputs and creates a dashboard for 1 EBS Volume.
 ![AWS Console](EBSDash_Dashboard.png)
 
