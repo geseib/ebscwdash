@@ -24,7 +24,11 @@ After a minute, you can select the URL from the Outputs tab in the Cloudformatio
 In order to get accurate reading we need to grab a few EBS metrics and use the **metric math** feature in **Amazon Cloudwatch**. We will setup two graphs; one for the IOPs and one for the Throughput. 
 
 ### EBS IOPs Graph
+![EBS Throughput Graph](EBSDash_ThroughputGraph.png)
+
 We will need to calculate the IOPs from the Ops metrics as below.
+
+![EBS Throughput Metrics](EBSDash_ThroughputMetrics.png)
 
 | Visible | **id** | **Label**      | **Details**                                   | **Statistic** | **Period** |
 |---------|--------|----------------|-----------------------------------------------|---------------|------------|
@@ -73,7 +77,10 @@ Here is the source code for **EBS Volume IOPs** *(be sure to replace **vol-xxxxx
 
 
 ## EBS Throughput Graph
-We will also need to calculate the Throughput from the Ops metrics as below.
+![EBS Throughput Graph](EBSDash_ThroughputGraph.png)
+
+We will need to calculate the Throughput from the Ops metrics as below.
+![EBS Throughput Metrics](EBSDash_ThroughputMetrics.png)
 
 | Visible | Id | Label               | Details                                      | Statistic | **Period** |
 |---------|----|---------------------|----------------------------------------------|-----------|------------|
@@ -84,7 +91,6 @@ We will also need to calculate the Throughput from the Ops metrics as below.
 |         | m4 | VolumeWriteBytes    | EBS.VolumeWriteBytes:VolumeId:volxxxxxxxxxxx | Sum       | 1 Minute   |
 
 Here is the source code for **EBS Volume Throughput** *(be sure to replace **vol-xxxxxxxxxxxxxx** with the VolumeId of your EBS volume)*
-
 ```
 {
     "metrics": [
