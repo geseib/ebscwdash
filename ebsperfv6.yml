@@ -1,0 +1,179 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "NLB Web Servers in TGW Workshop"
+
+Parameters:
+  EBSAttached:
+    Description: "Attached Instance"
+    Type: String
+    Default: "none"
+
+  EBSVolumeMaxBW:
+    Description: "EBS Volume Bandwidth in MB."
+    Type: Number
+    MinValue: 125
+    MaxValue: 1000
+    Default: 250
+
+  EBSVolumeMaxIOPs:
+    Description: "EBS Volume Max IOPs."
+    Type: Number
+    MinValue: 3
+    MaxValue: 250000
+    Default: 3000
+
+  EBSVolumeSize:
+    Description: "EBS Volume Size in GB"
+    Type: Number
+    MinValue: 1
+    MaxValue: 65536
+    Default: 100
+  
+  EBSVolumeId:
+    Description: "EBS Volume to Monitor."
+    Type: AWS::EC2::Volume::Id
+    AllowedPattern: "^[A-Za-z0-9_-]*$"
+    Default: vol-0a2ddbf3ee34e7d2a
+
+  EBSDashboardName:
+    Description: "Cloudwatch Dashboard Name."
+    Type: String
+    AllowedPattern: "^[A-Za-z0-9_-]*$"
+    Default: EBSDashboard3
+
+
+Resources:
+  EBSDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties: 
+      DashboardBody: !Sub
+        '{
+            "widgets": [
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 0,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ { "expression": "m1/PERIOD(m1)", "label": "Read IOPs", "id": "e1", "region": "${AWS::Region}" } ],
+                            [ { "expression": "m2/PERIOD(m2)", "label": "Writes IOPs", "id": "e2", "region": "${AWS::Region}" } ],
+                            [ { "expression": "e1+e2", "label": "Total IOPs", "id": "e3", "region": "${AWS::Region}" } ],
+                            [ "AWS/EBS", "VolumeReadOps", "VolumeId", "${EBSVolumeId}", { "id": "m1", "visible": false } ],
+                            [ ".", "VolumeWriteOps", ".", ".", { "id": "m2", "visible": false } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 60,
+                        "yAxis": {
+                            "left": {
+                                "label": "IOPS",
+                                "showUnits": false
+                            },
+                            "right": {
+                                "label": "",
+                                "showUnits": false
+                            }
+                        },
+                        "annotations": {
+                            "horizontal": [
+                                {
+                                    "label": "IOPs Max",
+                                    "value": ${EBSVolumeMaxIOPs}
+                                }
+                            ]
+                        },
+                        "title": "EBS IOPS"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 0,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ { "expression": "(m4/(1024*1024))/PERIOD(m4)", "label": "MB Read Per Second", "id": "e4", "region": "${AWS::Region}" } ],
+                            [ { "expression": "(m3/(1024*1024))/PERIOD(m3)", "label": "MB Write Per Second", "id": "e5", "region": "${AWS::Region}" } ],
+                            [ { "expression": "e4+e5", "label": "Total Consumed MB/s", "id": "e6", "region": "${AWS::Region}" } ],
+                            [ "AWS/EBS", "VolumeWriteBytes", "VolumeId", "${EBSVolumeId}", { "id": "m3", "visible": false } ],
+                            [ ".", "VolumeReadBytes", ".", ".", { "id": "m4", "visible": false } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 60,
+                        "yAxis": {
+                            "left": {
+                                "label": "MB/s",
+                                "showUnits": false
+                            },
+                            "right": {
+                                "label": "",
+                                "showUnits": false
+                            }
+                        },
+                        "annotations": {
+                            "horizontal": [
+                                {
+                                    "label": "BW Max",
+                                    "value": ${EBSVolumeMaxBW}
+                                }
+                            ]
+                        },
+                        "title": "EBS MB per Second"
+                    }
+                },
+                                  {
+                      "type": "metric",
+                      "x": 0,
+                      "y": 6,
+                      "width": 9,
+                      "height": 6,
+                      "properties": {
+                          "metrics": [
+                              [ { "expression": "e1+e2", "label": "Average Read/Write Combined Latency", "id": "e3", "region": "${AWS::Region}" } ],
+                              [ { "expression": "(m2/m1)*1000", "label": "Average Read Latency", "id": "e1", "region": "${AWS::Region}" } ],
+                              [ { "expression": "(m4/m3)*1000", "label": "Average Write Latency", "id": "e2", "region": "${AWS::Region}" } ],
+                              [ "AWS/EBS", "VolumeTotalReadTime", "VolumeId", "${EBSVolumeId}", { "id": "m2", "visible": false } ],
+                              [ ".", "VolumeReadOps", ".", ".", { "id": "m1", "visible": false } ],
+                              [ ".", "VolumeTotalWriteTime", ".", ".", { "id": "m4", "visible": false } ],
+                              [ ".", "VolumeWriteOps", ".", ".", { "id": "m3", "visible": false } ]
+                          ],
+                          "view": "timeSeries",
+                          "stacked": false,
+                          "region": "${AWS::Region}",
+                          "stat": "Sum",
+                          "period": 60,
+                          "title": "Volume Read Write Latency",
+                          "yAxis": {
+                              "left": {
+                                  "label": "ms",
+                                  "showUnits": false
+                              }
+                          }
+                      }
+                  },
+                  {
+                      "type": "text",
+                      "x": 9,
+                      "y": 6,
+                      "width": 6,
+                      "height": 6,
+                      "properties": {
+                          "markdown": "# EBS Volume Info \n \nTable | Header \n----|----- \nVolumeId | [${EBSVolumeId}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Volumes:volumeId=${EBSVolumeId};sort=desc:createTime) \nVolumeSize | ${EBSVolumeSize} GB\nVolumeIOPs | ${EBSVolumeMaxIOPs} IOPs\nVolumeThroughput | ${EBSVolumeMaxBW} MB/s\nAttached Instance | [${EBSAttached}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Instances:search=${EBSAttached};sort=desc:instanceId)\n"
+                      }
+                  }
+            ]
+        }'
+      DashboardName: !Ref EBSDashboardName
+
+Outputs:
+  EBSPerformanceDashboard:
+    Description: "Link to CloudWatch Dashboard"
+    Value: !Sub "https://console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=${EBSDashboardName}"
