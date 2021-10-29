@@ -17,11 +17,16 @@ This cloudformation template takes the four inputs and creates a dashboard for 1
 - Max Throughput for the Volume (125MB/s for 170GB GP2 or smaller Volumes and 250MB/s for larger. For GP3 or IO2 this is set with the volume provisioning. see [Table](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#solid-state-drives))
 
 
-Download the Cloudformation [template](https://raw.githubusercontent.com/geseib/ebscwdash/master/ebsperfv4.yml) **right click and save locally** and launch it using the following aws-cli (if not already installed, requires [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)):
+Download the Cloudformation [template](https://raw.githubusercontent.com/geseib/ebscwdash/master/ebsperfv6.yml) **right click and save locally** and launch it using the following bash shell script which uses aws-cli (if not already installed, requires [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)):
 
+
+**Automated deployment**
 ```
-aws cloudformation create-stack --stack-name myEBSIOPSDashboard --template-body file://ebsperfv4.yml --parameters ParameterKey=EBSDashboardName,ParameterValue=EBSDashboard ParameterKey=EBSVolumeID,ParameterValue=vol-123456789abcdefg ParameterKey=EBSVolumeMaxBW,ParameterValue=250 ParameterKey=EBSVolumeMaxIOPs,ParameterValue=3000
+.\createebsdash.sh vol-xxxxxxxxxxxx MyEBSDashboard us-east-1
+
+# the region is optional, and will use your aws-cli's default region in ~/.aws/configure
 ```
+
 or run from the [AWS Console](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/template), click **Upload a template file**, and click **Choose file**, choose the YAML file you downloaded above. 
 
 ![AWS Console](EBSDash_Parameters.png)

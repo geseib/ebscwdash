@@ -166,7 +166,7 @@ Resources:
                       "width": 6,
                       "height": 6,
                       "properties": {
-                          "markdown": "# EBS Volume Info \n \nTable | Header \n----|----- \nVolumeId | [${EBSVolumeId}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Volumes:volumeId=${EBSVolumeId};sort=desc:createTime) \nVolumeSize | ${EBSVolumeSize} GB\nVolumeIOPs | ${EBSVolumeMaxIOPs} IOPs\nVolumeThroughput | ${EBSVolumeMaxBW} MB/s\nAttached Instance | [${EBSAttached}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Instances:search=${EBSAttached};sort=desc:instanceId)\n"
+                          "markdown": "# EBS Volume Info \n \nParameter | Value \n----|----- \nVolumeId | [${EBSVolumeId}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Volumes:volumeId=${EBSVolumeId};sort=desc:createTime) \nVolumeSize | ${EBSVolumeSize} GB\nVolumeIOPs | ${EBSVolumeMaxIOPs} IOPs\nVolumeThroughput | ${EBSVolumeMaxBW} MB/s\nAttached Instance | [${EBSAttached}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Instances:search=${EBSAttached};sort=desc:instanceId)\n"
                       }
                   }
             ]
