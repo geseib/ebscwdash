@@ -7,6 +7,16 @@ When you provision an EBS volume in AWS it has two main performance contraints d
 
 
 ### Install
+Clone this repo and then you can run the bash script, **createebsdash.sh**, which will collect info about your ebs volume and build the dashboard.
+
+**Automated deployment**
+```
+.\createebsdash.sh vol-xxxxxxxxxxxx MyEBSDashboard us-east-1
+
+# the region is optional, and will use your aws-cli's default region in ~/.aws/configure
+```
+
+
 This cloudformation template takes the four inputs and creates a dashboard for 1 EBS Volume.
 ![AWS Console](EBSDash_Dashboard.png)
 
