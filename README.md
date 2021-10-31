@@ -23,9 +23,13 @@ This cloudformation template takes the four inputs and creates a dashboard for 1
 ### Inputs
 - Dashboard Name
 - EBS Volume ID (Either provide the VolumeID explicitly or from the dropdown select the VolumeID)
+- AWS Region (if other than **us-east-1**)
+
+**The shell script looks up the following from your volume and supplies to the Cloudformation template with the above**
 - Provisioned IOPS or calculated IOPS for GP2 (for GP2 it will be 3 IOP per GB or storage. i.e. 1TB volume will have 3000 IOPS max. For GP3 or IO2 this number is configured with the volume)
 - Max Throughput for the Volume (125MB/s for 170GB GP2 or smaller Volumes and 250MB/s for larger. For GP3 or IO2 this is set with the volume provisioning. see [Table](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#solid-state-drives))
-
+- Volume size in MB
+- Attached instanceId of the EC2 instance attached to the Volume
 
 Download the Cloudformation [template](https://raw.githubusercontent.com/geseib/ebscwdash/master/ebsperfv6.yml) **right click and save locally** and launch it using the following bash shell script which uses aws-cli (if not already installed, requires [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)):
 
@@ -34,7 +38,7 @@ Download the Cloudformation [template](https://raw.githubusercontent.com/geseib/
 ```
 .\createebsdash.sh vol-xxxxxxxxxxxx MyEBSDashboard us-east-1
 
-# the region is optional, and will use your aws-cli's default region in ~/.aws/configure
+# the region is optional, and will use us-east-1 as the default region
 ```
 
 or run from the [AWS Console](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/template), click **Upload a template file**, and click **Choose file**, choose the YAML file you downloaded above. 
