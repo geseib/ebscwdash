@@ -38,5 +38,8 @@ echo "the $type volume has a size of $size GB and has $iops IOPs and a throughpu
 
 aws cloudformation create-stack --stack-name $2 --template-body file://ebsperfv6.yml --parameters ParameterKey=EBSDashboardName,ParameterValue=$2 ParameterKey=EBSVolumeId,ParameterValue=$1 ParameterKey=EBSVolumeMaxBW,ParameterValue=$throughput ParameterKey=EBSVolumeMaxIOPs,ParameterValue=$iops ParameterKey=EBSAttached,ParameterValue=$instance ParameterKey=EBSVolumeSize,ParameterValue=$size --region $region
 
-
+echo "waiting for cloudformation stack completion"
+aws cloudformation wait stack-create-complete --stack-name $2 --region $region
+echo "your Dashboard is here:"
+aws cloudformation describe-stacks --stack-name $2 --output yaml | grep OutputValue | cut -d : -f2,3,4
 

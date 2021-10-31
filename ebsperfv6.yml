@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "NLB Web Servers in TGW Workshop"
+Description: "Cloudwatch Dashboard for EBS IOPs and throughput"
 
 Parameters:
   EBSAttached:
@@ -9,7 +9,7 @@ Parameters:
     Default: "none"
 
   EBSVolumeMaxBW:
-    Description: "EBS Volume Bandwidth in MB."
+    Description: "EBS Volume Throughput in MB."
     Type: Number
     MinValue: 125
     MaxValue: 1000
@@ -126,7 +126,7 @@ Resources:
                                 }
                             ]
                         },
-                        "title": "EBS MB per Second"
+                        "title": "EBS Throughput MB/s"
                     }
                 },
                                   {
@@ -163,7 +163,7 @@ Resources:
                       "type": "text",
                       "x": 9,
                       "y": 6,
-                      "width": 6,
+                      "width": 9,
                       "height": 6,
                       "properties": {
                           "markdown": "# EBS Volume Info \n \nParameter | Value \n----|----- \nVolumeId | [${EBSVolumeId}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Volumes:volumeId=${EBSVolumeId};sort=desc:createTime) \nVolumeSize | ${EBSVolumeSize} GB\nVolumeIOPs | ${EBSVolumeMaxIOPs} IOPs\nVolumeThroughput | ${EBSVolumeMaxBW} MB/s\nAttached Instance | [${EBSAttached}](https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Instances:search=${EBSAttached};sort=desc:instanceId)\n"
